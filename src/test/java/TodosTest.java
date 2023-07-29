@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 public class TodosTest {
 
     @Test
@@ -28,29 +30,61 @@ public class TodosTest {
         Assertions.assertArrayEquals(expected, actual);
     }
     @Test
-    public void shouldASearchSimpleTask() {
+    public void shouldSearchQuerySimpleTask() {
         SimpleTask simpleTask = new SimpleTask(5, "Позвонить родителям");
 
 
-        boolean expected = true;
-        boolean actual = simpleTask.matches("Позвонить родителям");
+        Todos todos = new Todos();
 
-        Assertions.assertEquals(expected, actual);
+        todos.add(simpleTask);
+
+        Task[] expected = { simpleTask };
+        Task[] actual = todos.search("родителям");
+        Assertions.assertArrayEquals(expected, actual);
     }
 
     @Test
-    public void noMatchesSimpleTask() {
+    public void shouldSearchQueryProjectMeeting() {
+        Meeting meeting = new Meeting(
+                555,
+                "Выкатка 3й версии приложения",
+                "Приложение НетоБанка",
+                "Во вторник после обеда"
+        );
+
+        Todos todos = new Todos();
+
+
+        todos.add(meeting);
+
+        Task[] expected = { meeting };
+        Task[] actual = todos.search("НетоБанка");
+        Assertions.assertArrayEquals(expected, actual);
+    }
+    @Test
+    public void shouldSearchQueryTopicMeeting() {
+        Meeting meeting = new Meeting(
+                555,
+                "Выкатка 3й версии приложения",
+                "Приложение НетоБанка",
+                "Во вторник после обеда"
+        );
+
+        Todos todos = new Todos();
+
+
+        todos.add(meeting);
+
+        Task[] expected = { meeting };
+        Task[] actual = todos.search("Выкатка");
+        Assertions.assertArrayEquals(expected, actual);
+    }
+    @Test
+    public void shouldNoSearchQuery() {
         SimpleTask simpleTask = new SimpleTask(5, "Позвонить родителям");
 
-
-        boolean expected = false;
-        boolean actual = simpleTask.matches("Позвонить друзьям");
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void matchesMeetingTopic() {
+        String[] subtasks = { "Молоко", "Яйца", "Хлеб" };
+        Epic epic = new Epic(55, subtasks);
 
         Meeting meeting = new Meeting(
                 555,
@@ -59,113 +93,14 @@ public class TodosTest {
                 "Во вторник после обеда"
         );
 
+        Todos todos = new Todos();
 
-        boolean expected = true;
-        boolean actual = meeting.matches("Выкатка 3й версии приложения");
+        todos.add(simpleTask);
+        todos.add(epic);
+        todos.add(meeting);
 
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void NoMatchesMeetingTopic() {
-
-        Meeting meeting = new Meeting(
-                555,
-                "Выкатка 3й версии приложения",
-                "Приложение НетоБанка",
-                "Во вторник после обеда"
-        );
-
-
-        boolean expected = false;
-        boolean actual = meeting.matches("Выкатка 5й версии приложения");
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void matchesMeetingProject() {
-
-        Meeting meeting = new Meeting(
-                555,
-                "Выкатка 3й версии приложения",
-                "Приложение НетоБанка",
-                "Во вторник после обеда"
-        );
-
-
-        boolean expected = true;
-        boolean actual = meeting.matches("Приложение НетоБанка");
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void noMatchesMeetingProject() {
-
-        Meeting meeting = new Meeting(
-                555,
-                "Выкатка 3й версии приложения",
-                "Приложение НетоБанка",
-                "Во вторник после обеда"
-        );
-
-
-        boolean expected = false;
-        boolean actual = meeting.matches("Приложение ВТБ Банка");
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void matchesEpicMilk() {
-
-        String[] subtasks = { "Молоко", "Яйца", "Хлеб" };
-        Epic epic = new Epic(55, subtasks);
-
-
-        boolean expected = true;
-        boolean actual = epic.matches("Молоко");
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void matchesEpicEggs() {
-
-        String[] subtasks = { "Молоко", "Яйца", "Хлеб" };
-        Epic epic = new Epic(55, subtasks);
-
-
-        boolean expected = true;
-        boolean actual = epic.matches("Яйца");
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void matchesEpicBread() {
-
-        String[] subtasks = { "Молоко", "Яйца", "Хлеб" };
-        Epic epic = new Epic(55, subtasks);
-
-
-        boolean expected = true;
-        boolean actual = epic.matches("Хлеб");
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void noMatchesEpic() {
-
-        String[] subtasks = { "Молоко", "Яйца", "Хлеб" };
-        Epic epic = new Epic(55, subtasks);
-
-
-        boolean expected = false;
-        boolean actual = epic.matches("Батон");
-
-        Assertions.assertEquals(expected, actual);
+        Task[] expected = { };
+        Task[] actual = todos.search("Батон");
+        Assertions.assertArrayEquals(expected, actual);
     }
 }
